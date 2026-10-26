@@ -18,7 +18,8 @@ export const TicketCard = forwardRef(({ ticketData, isExporting = false }, ref) 
     cinemaAddress = 'Kothapet Main Road, Guntur',
     bookingId = '55610347/10000085286830',
     tagline = '#JoinTheHype',
-    qrValue
+    qrValue,
+    qrImageUrl
   } = ticketData;
 
   const cinemaFullString = [cinemaName, cinemaAddress].filter(Boolean).join(', ');
@@ -170,7 +171,7 @@ export const TicketCard = forwardRef(({ ticketData, isExporting = false }, ref) 
         </div>
       </div>
 
-      {/* 4. Dynamic Live QR Code: Placed inside the white container at x: 125..329, y: 331..536 */}
+      {/* 4. QR Code Container (x: 125..329, y: 331..536) - supports either custom QR image OR generated SVG QR */}
       <div
         style={{
           position: 'absolute',
@@ -185,16 +186,31 @@ export const TicketCard = forwardRef(({ ticketData, isExporting = false }, ref) 
           justifyContent: 'center',
           zIndex: 4,
           padding: `${14 * scale}px`,
-          boxShadow: '0 6px 20px rgba(0, 0, 0, 0.35)'
+          boxShadow: '0 6px 20px rgba(0, 0, 0, 0.35)',
+          overflow: 'hidden'
         }}
       >
-        <QRCodeSVG
-          value={qrValue || bookingId || 'DISTRICT-TICKET-BOOKING-418'}
-          size={Math.round(176 * scale)}
-          level="M"
-          fgColor="#000000"
-          bgColor="#ffffff"
-        />
+        {qrImageUrl ? (
+          <img
+            src={qrImageUrl}
+            alt="Custom QR Code"
+            style={{
+              width: `${176 * scale}px`,
+              height: `${176 * scale}px`,
+              objectFit: 'contain',
+              display: 'block'
+            }}
+            crossOrigin="anonymous"
+          />
+        ) : (
+          <QRCodeSVG
+            value={qrValue || bookingId || 'DISTRICT-TICKET-BOOKING-418'}
+            size={Math.round(176 * scale)}
+            level="M"
+            fgColor="#000000"
+            bgColor="#ffffff"
+          />
+        )}
       </div>
 
       {/* 5. Screen & Seat Numbers (y: 554..618) */}
