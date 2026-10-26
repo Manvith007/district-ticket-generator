@@ -30,7 +30,28 @@ export const TicketCard = forwardRef(({ ticketData, isExporting = false }, ref) 
   const TICKET_HEIGHT = Math.round(817 * (TICKET_WIDTH / 453)); // ~685px
   const scale = TICKET_WIDTH / 453;
 
-  const hasQrContent = Boolean(qrImageUrl || qrValue);
+  // Build automatic QR payload from the entered ticket details
+  const autoQrPayload = (() => {
+    // If user provided a specific QR override value, use that
+    if (qrValue && qrValue.trim()) return qrValue.trim();
+
+    // Otherwise automatically construct from entered fields:
+    const parts = [
+      movieName ? `MOVIE:${movieName}` : null,
+      (dateDay || time) ? `SHOW:${[dateDay, time].filter(Boolean).join(' ')}` : null,
+      screenNumber ? `SCREEN:${screenNumber}` : null,
+      (seatingClass || seatNumbers) ? `SEATS:${[seatingClass, seatNumbers].filter(Boolean).join('-')}` : null,
+      cinemaName ? `CINEMA:${cinemaName}` : null,
+      bookingId ? `BOOKING_ID:${bookingId}` : null
+    ].filter(Boolean);
+
+    if (parts.length > 0) {
+      return `DISTRICT|${parts.join('|')}`;
+    }
+    return '';
+  })();
+
+  const hasQrContent = Boolean(qrImageUrl || autoQrPayload);
 
   return (
     <div
@@ -207,16 +228,16 @@ export const TicketCard = forwardRef(({ ticketData, isExporting = false }, ref) 
             }}
             crossOrigin="anonymous"
           />
-        ) : qrValue ? (
+        ) : autoQrPayload ? (
           <QRCodeSVG
-            value={qrValue}
+            value={autoQrPayload}
             size={Math.round(176 * scale)}
             level="M"
             fgColor="#000000"
             bgColor="#ffffff"
           />
         ) : (
-          /* Clean blank white card when no QR code data/image is entered */
+          /* Clean placeholder waiting for ticket data */
           <div style={{
             display: 'flex',
             flexDirection: 'column',
@@ -233,7 +254,7 @@ export const TicketCard = forwardRef(({ ticketData, isExporting = false }, ref) 
             height: '100%'
           }}>
             <span style={{ fontSize: `${12 * scale}px`, color: '#64748b' }}>QR CODE</span>
-            <span style={{ fontSize: `${10 * scale}px`, color: '#94a3b8', marginTop: '2px' }}>Upload or enter data</span>
+            <span style={{ fontSize: `${10 * scale}px`, color: '#94a3b8', marginTop: '2px' }}>Auto-generates as you type</span>
           </div>
         )}
       </div>

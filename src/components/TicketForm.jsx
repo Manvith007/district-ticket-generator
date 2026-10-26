@@ -8,10 +8,10 @@ import {
   Upload, 
   RotateCcw, 
   Shuffle,
-  Image as ImageIcon,
   Sparkles,
   Sliders,
-  Trash2
+  Trash2,
+  Check
 } from 'lucide-react';
 
 export const TicketForm = ({ 
@@ -82,7 +82,7 @@ export const TicketForm = ({
             </h2>
           </div>
           <p style={{ fontSize: '12.5px', color: '#94a3b8', margin: '4px 0 0 0' }}>
-            Modify any detail to update the live preview instantly
+            QR code updates automatically as you type
           </p>
         </div>
 
@@ -104,10 +104,10 @@ export const TicketForm = ({
               cursor: 'pointer',
               transition: 'all 0.15s ease'
             }}
-            title="Reset to original uploaded ticket details"
+            title="Clear all fields"
           >
             <RotateCcw size={14} />
-            Original
+            Clear
           </button>
           
           <button
@@ -128,7 +128,7 @@ export const TicketForm = ({
               transition: 'all 0.15s ease',
               boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
             }}
-            title="Load popular blockbuster preset"
+            title="Load sample example preset"
           >
             <Shuffle size={14} />
             Load Sample
@@ -148,7 +148,7 @@ export const TicketForm = ({
             <div style={{ gridColumn: '1 / -1' }}>
               <input
                 type="text"
-                placeholder="Movie Title (e.g. 418)"
+                placeholder="Movie Title (e.g. Kalki 2898 AD, 418)"
                 value={ticketData.movieName}
                 onChange={(e) => handleInputChange('movieName', e.target.value)}
                 style={inputStyle}
@@ -161,9 +161,9 @@ export const TicketForm = ({
                 onChange={(e) => handleInputChange('certification', e.target.value)}
                 style={inputStyle}
               >
-                <option value="A">A</option>
-                <option value="U/A">U/A</option>
                 <option value="U">U</option>
+                <option value="U/A">U/A</option>
+                <option value="A">A</option>
                 <option value="PG-13">PG-13</option>
                 <option value="R">R</option>
               </select>
@@ -172,7 +172,7 @@ export const TicketForm = ({
               <label style={subLabelStyle}>Language</label>
               <input
                 type="text"
-                placeholder="Telugu"
+                placeholder="Telugu, Hindi, English"
                 value={ticketData.language}
                 onChange={(e) => handleInputChange('language', e.target.value)}
                 style={inputStyle}
@@ -182,7 +182,7 @@ export const TicketForm = ({
               <label style={subLabelStyle}>Format</label>
               <input
                 type="text"
-                placeholder="2D"
+                placeholder="2D, 3D, IMAX 3D"
                 value={ticketData.format}
                 onChange={(e) => handleInputChange('format', e.target.value)}
                 style={inputStyle}
@@ -287,7 +287,7 @@ export const TicketForm = ({
               <label style={subLabelStyle}>Seat Numbers</label>
               <input
                 type="text"
-                placeholder="A9,A8,A7"
+                placeholder="A9, A8, A7"
                 value={ticketData.seatNumbers}
                 onChange={(e) => handleInputChange('seatNumbers', e.target.value)}
                 style={inputStyle}
@@ -328,14 +328,14 @@ export const TicketForm = ({
           </label>
           <input
             type="text"
-            placeholder="55610347/10000085286830"
+            placeholder="e.g. 55610347/10000085286830"
             value={ticketData.bookingId}
             onChange={(e) => handleInputChange('bookingId', e.target.value)}
             style={inputStyle}
           />
         </div>
 
-        {/* QR Code Section: Live Generator OR Custom QR Image Upload */}
+        {/* QR Code Section */}
         <div style={{
           backgroundColor: '#0f172a',
           border: '1px solid #334155',
@@ -345,21 +345,32 @@ export const TicketForm = ({
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
             <label style={{ fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#38bdf8', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
               <QrCode size={15} />
-              QR Code Options
+              QR Code (Auto-Generated from your Ticket Data)
             </label>
-            <span style={{ fontSize: '11px', color: '#94a3b8' }}>
-              {ticketData.qrImageUrl ? 'Custom QR Image Active' : 'Auto-Generated QR'}
+            <span style={{
+              fontSize: '11px',
+              padding: '2px 8px',
+              borderRadius: '4px',
+              backgroundColor: ticketData.qrImageUrl ? 'rgba(59, 130, 246, 0.2)' : 'rgba(34, 197, 94, 0.2)',
+              color: ticketData.qrImageUrl ? '#93c5fd' : '#86efac',
+              fontWeight: '600'
+            }}>
+              {ticketData.qrImageUrl ? 'Custom Image Active' : 'Auto Dynamic QR Active'}
             </span>
           </div>
 
+          <p style={{ fontSize: '12px', color: '#94a3b8', margin: '0 0 12px 0' }}>
+            The QR code automatically compiles and encodes your movie name, showtime, screen, seats, cinema, and booking ID in real-time.
+          </p>
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {/* Custom QR Image Upload */}
+            {/* Custom QR Image Upload (Optional) */}
             <div>
-              <label style={subLabelStyle}>Upload Custom QR Code Image</label>
+              <label style={subLabelStyle}>Optional: Override with Custom QR Image</label>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 <input
                   type="text"
-                  placeholder="Paste QR image URL or upload image file below"
+                  placeholder="Paste QR image URL or upload image file"
                   value={ticketData.qrImageUrl || ''}
                   onChange={(e) => handleInputChange('qrImageUrl', e.target.value)}
                   style={{ ...inputStyle, flex: 1 }}
@@ -385,7 +396,7 @@ export const TicketForm = ({
                   <button
                     type="button"
                     onClick={() => handleInputChange('qrImageUrl', '')}
-                    title="Remove custom QR image and use auto QR generator"
+                    title="Remove custom QR image and return to auto-generated QR"
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -404,13 +415,13 @@ export const TicketForm = ({
               </div>
             </div>
 
-            {/* Live QR Data fallback */}
+            {/* Custom Manual QR Payload (Optional override) */}
             <div>
-              <label style={subLabelStyle}>QR Payload (Text/URL encoded when no image uploaded)</label>
+              <label style={subLabelStyle}>Optional: Manual QR Text Override (Leave blank to use auto-generated)</label>
               <input
                 type="text"
-                placeholder="Data encoded inside the QR code"
-                value={ticketData.qrValue}
+                placeholder="Optional manual QR text/link (leave empty to auto-build from movie details)"
+                value={ticketData.qrValue || ''}
                 onChange={(e) => handleInputChange('qrValue', e.target.value)}
                 style={inputStyle}
               />
