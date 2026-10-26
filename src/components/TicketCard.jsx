@@ -4,22 +4,22 @@ import { TICKET_TEMPLATE_BASE64 } from './templateData';
 
 export const TicketCard = forwardRef(({ ticketData, isExporting = false }, ref) => {
   const {
-    movieName = '418',
-    posterUrl = '/poster-exact.png',
-    certification = 'A',
-    language = 'Telugu',
+    movieName = '',
+    posterUrl = '',
+    certification = 'U/A',
+    language = '',
     format = '2D',
-    dateDay = 'Friday 23 Oct',
-    time = '2:30 PM',
-    screenNumber = '2',
-    seatingClass = 'GOLD CLASS',
-    seatNumbers = 'A9,A8,A7',
-    cinemaName = 'Naaz Cinemas',
-    cinemaAddress = 'Kothapet Main Road, Guntur',
-    bookingId = '55610347/10000085286830',
+    dateDay = '',
+    time = '',
+    screenNumber = '',
+    seatingClass = '',
+    seatNumbers = '',
+    cinemaName = '',
+    cinemaAddress = '',
+    bookingId = '',
     tagline = '#JoinTheHype',
-    qrValue,
-    qrImageUrl
+    qrValue = '',
+    qrImageUrl = ''
   } = ticketData;
 
   const cinemaFullString = [cinemaName, cinemaAddress].filter(Boolean).join(', ');
@@ -29,6 +29,8 @@ export const TicketCard = forwardRef(({ ticketData, isExporting = false }, ref) 
   const TICKET_WIDTH = 380;
   const TICKET_HEIGHT = Math.round(817 * (TICKET_WIDTH / 453)); // ~685px
   const scale = TICKET_WIDTH / 453;
+
+  const hasQrContent = Boolean(qrImageUrl || qrValue);
 
   return (
     <div
@@ -82,7 +84,7 @@ export const TicketCard = forwardRef(({ ticketData, isExporting = false }, ref) 
         {posterUrl ? (
           <img
             src={posterUrl}
-            alt={movieName}
+            alt={movieName || 'Movie Poster'}
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             crossOrigin="anonymous"
           />
@@ -93,10 +95,13 @@ export const TicketCard = forwardRef(({ ticketData, isExporting = false }, ref) 
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#64748b',
-            fontSize: '10px',
+            color: '#475569',
+            fontSize: '9.5px',
             textAlign: 'center',
-            fontWeight: 700
+            fontWeight: 700,
+            padding: '4px',
+            border: '1px dashed #334155',
+            borderRadius: '6px'
           }}>
             POSTER
           </div>
@@ -125,13 +130,13 @@ export const TicketCard = forwardRef(({ ticketData, isExporting = false }, ref) 
             fontWeight: '800',
             lineHeight: 1.2,
             letterSpacing: '-0.02em',
-            color: '#ffffff',
+            color: movieName ? '#ffffff' : '#64748b',
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis'
           }}
         >
-          {movieName}
+          {movieName || 'Movie Name'}
         </div>
 
         {/* Certification | Language | Format */}
@@ -146,11 +151,11 @@ export const TicketCard = forwardRef(({ ticketData, isExporting = false }, ref) 
             marginTop: `${6 * scale}px`
           }}
         >
-          <span>{certification}</span>
+          <span>{certification || 'U/A'}</span>
           <span style={{ color: 'rgba(255, 255, 255, 0.28)' }}>|</span>
-          <span>{language}</span>
+          <span>{language || 'Language'}</span>
           <span style={{ color: 'rgba(255, 255, 255, 0.28)' }}>|</span>
-          <span>{format}</span>
+          <span>{format || '2D'}</span>
         </div>
 
         {/* Date | Time */}
@@ -158,20 +163,20 @@ export const TicketCard = forwardRef(({ ticketData, isExporting = false }, ref) 
           style={{
             fontSize: `${14.5 * scale}px`,
             fontWeight: '700',
-            color: '#ffffff',
+            color: dateDay || time ? '#ffffff' : '#64748b',
             display: 'flex',
             alignItems: 'center',
             gap: `${8 * scale}px`,
             marginTop: `${8 * scale}px`
           }}
         >
-          <span>{dateDay}</span>
+          <span>{dateDay || 'Show Date'}</span>
           <span style={{ color: 'rgba(255, 255, 255, 0.35)', fontWeight: 300 }}>|</span>
-          <span>{time}</span>
+          <span>{time || 'Show Time'}</span>
         </div>
       </div>
 
-      {/* 4. QR Code Container (x: 125..329, y: 331..536) - supports either custom QR image OR generated SVG QR */}
+      {/* 4. QR Code Container (x: 125..329, y: 331..536) */}
       <div
         style={{
           position: 'absolute',
@@ -202,14 +207,34 @@ export const TicketCard = forwardRef(({ ticketData, isExporting = false }, ref) 
             }}
             crossOrigin="anonymous"
           />
-        ) : (
+        ) : qrValue ? (
           <QRCodeSVG
-            value={qrValue || bookingId || 'DISTRICT-TICKET-BOOKING-418'}
+            value={qrValue}
             size={Math.round(176 * scale)}
             level="M"
             fgColor="#000000"
             bgColor="#ffffff"
           />
+        ) : (
+          /* Clean blank white card when no QR code data/image is entered */
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#94a3b8',
+            fontSize: `${11 * scale}px`,
+            fontWeight: '600',
+            textAlign: 'center',
+            padding: '8px',
+            border: '2px dashed #cbd5e1',
+            borderRadius: `${14 * scale}px`,
+            width: '100%',
+            height: '100%'
+          }}>
+            <span style={{ fontSize: `${12 * scale}px`, color: '#64748b' }}>QR CODE</span>
+            <span style={{ fontSize: `${10 * scale}px`, color: '#94a3b8', marginTop: '2px' }}>Upload or enter data</span>
+          </div>
         )}
       </div>
 
@@ -231,11 +256,11 @@ export const TicketCard = forwardRef(({ ticketData, isExporting = false }, ref) 
             fontWeight: '700',
             letterSpacing: '0.06em',
             textTransform: 'uppercase',
-            color: '#ffffff',
+            color: screenNumber ? '#ffffff' : '#64748b',
             marginBottom: `${4 * scale}px`
           }}
         >
-          SCREEN {screenNumber}
+          {screenNumber ? `SCREEN ${screenNumber}` : 'SCREEN'}
         </div>
         <div
           style={{
@@ -243,10 +268,14 @@ export const TicketCard = forwardRef(({ ticketData, isExporting = false }, ref) 
             fontWeight: '700',
             letterSpacing: '0.04em',
             textTransform: 'uppercase',
-            color: '#ffffff'
+            color: (seatingClass || seatNumbers) ? '#ffffff' : '#64748b'
           }}
         >
-          {seatingClass ? `${seatingClass}-` : ''}{seatNumbers}
+          {(seatingClass || seatNumbers) ? (
+            `${seatingClass ? `${seatingClass}-` : ''}${seatNumbers}`
+          ) : (
+            'CLASS - SEAT NUMBERS'
+          )}
         </div>
       </div>
 
@@ -261,11 +290,11 @@ export const TicketCard = forwardRef(({ ticketData, isExporting = false }, ref) 
           zIndex: 3,
           fontSize: `${13.5 * scale}px`,
           fontWeight: '500',
-          color: 'rgba(255, 255, 255, 0.9)',
+          color: cinemaFullString ? 'rgba(255, 255, 255, 0.9)' : '#64748b',
           lineHeight: 1.35
         }}
       >
-        {cinemaFullString}
+        {cinemaFullString || 'Cinema Name & Address'}
       </div>
 
       {/* 7. Booking ID (y: 724..750) */}
@@ -278,12 +307,12 @@ export const TicketCard = forwardRef(({ ticketData, isExporting = false }, ref) 
           textAlign: 'center',
           zIndex: 3,
           fontSize: `${11.5 * scale}px`,
-          color: 'rgba(255, 255, 255, 0.5)',
+          color: bookingId ? 'rgba(255, 255, 255, 0.5)' : '#475569',
           letterSpacing: '0.02em',
           fontFamily: "'Inter', monospace"
         }}
       >
-        Booking ID: {bookingId}
+        {bookingId ? `Booking ID: ${bookingId}` : 'Booking ID'}
       </div>
 
       {/* 8. Hashtag / Tagline (y: 760..795) */}
