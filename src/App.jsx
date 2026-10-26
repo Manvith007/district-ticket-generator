@@ -8,31 +8,31 @@ import {
   Image as ImageIcon, 
   Check, 
   Layers,
-  Film,
   Sparkles,
-  Ticket,
-  ExternalLink
+  Ticket
 } from 'lucide-react';
 
-const ORIGINAL_TICKET_DATA = {
-  movieName: '418',
-  posterUrl: '/poster-exact.png',
-  certification: 'A',
-  language: 'Telugu',
+// Fresh blank default data - no pre-filled movie details
+const BLANK_TICKET_DATA = {
+  movieName: '',
+  posterUrl: '',
+  certification: 'U/A',
+  language: '',
   format: '2D',
-  dateDay: 'Friday 23 Oct',
-  time: '2:30 PM',
-  screenNumber: '2',
-  seatingClass: 'GOLD CLASS',
-  seatNumbers: 'A9,A8,A7',
-  cinemaName: 'Naaz Cinemas',
-  cinemaAddress: 'Kothapet Main Road, Guntur',
-  bookingId: '55610347/10000085286830',
-  qrValue: 'DISTRICT-NAAZ-418-S2-A9A8A7-55610347',
+  dateDay: '',
+  time: '',
+  screenNumber: '',
+  seatingClass: '',
+  seatNumbers: '',
+  cinemaName: '',
+  cinemaAddress: '',
+  bookingId: '',
+  qrValue: '',
   qrImageUrl: '',
   tagline: '#JoinTheHype'
 };
 
+// Preset if user explicitly wants an example
 const SAMPLE_PRESET_DATA = {
   movieName: 'Kalki 2898 AD',
   posterUrl: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=500&auto=format&fit=crop&q=60',
@@ -53,7 +53,7 @@ const SAMPLE_PRESET_DATA = {
 };
 
 export function App() {
-  const [ticketData, setTicketData] = useState(ORIGINAL_TICKET_DATA);
+  const [ticketData, setTicketData] = useState(BLANK_TICKET_DATA);
   const [isExporting, setIsExporting] = useState(false);
   const [showOriginalComparison, setShowOriginalComparison] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState('');
@@ -61,7 +61,7 @@ export function App() {
   const ticketRef = useRef(null);
 
   const handleReset = () => {
-    setTicketData(ORIGINAL_TICKET_DATA);
+    setTicketData(BLANK_TICKET_DATA);
   };
 
   const handleLoadPreset = () => {
@@ -89,8 +89,9 @@ export function App() {
         backgroundColor: '#000000'
       });
 
+      const fileName = ticketData.movieName ? ticketData.movieName.replace(/\s+/g, '_') : 'Ticket';
       const link = document.createElement('a');
-      link.download = `District_Ticket_${ticketData.movieName.replace(/\s+/g, '_')}_${Date.now()}.png`;
+      link.download = `District_Ticket_${fileName}_${Date.now()}.png`;
       link.href = dataUrl;
       link.click();
 
@@ -124,7 +125,8 @@ export function App() {
       });
 
       pdf.addImage(dataUrl, 'PNG', 10, 10, 100, 200, undefined, 'FAST');
-      pdf.save(`District_Ticket_${ticketData.movieName.replace(/\s+/g, '_')}.pdf`);
+      const fileName = ticketData.movieName ? ticketData.movieName.replace(/\s+/g, '_') : 'Ticket';
+      pdf.save(`District_Ticket_${fileName}.pdf`);
 
       setDownloadSuccess('PDF Ticket downloaded successfully!');
       setTimeout(() => setDownloadSuccess(''), 4000);
@@ -222,7 +224,7 @@ export function App() {
               </span>
             </div>
             <p style={{ fontSize: '12px', color: '#94a3b8', margin: '2px 0 0 0' }}>
-              Dynamic Ticket Generator • Exact Photo Layout & Custom QR Support
+              Dynamic Ticket Generator • Exact District Layout & Custom QR Support
             </p>
           </div>
         </div>
@@ -327,10 +329,10 @@ export function App() {
               District Cinema Experience
             </div>
             <h2 style={{ fontSize: '24px', fontWeight: '800', margin: 0, color: '#ffffff', letterSpacing: '-0.02em' }}>
-              Create, Customize & Download Authentic Tickets
+              Custom Cinema Ticket Studio
             </h2>
             <p style={{ fontSize: '13px', color: '#cbd5e1', margin: '4px 0 0 0' }}>
-              Now supporting custom QR code uploads, dynamic poster integration, and print-ready downloads.
+              Fill in your details below to generate and download a fresh ticket.
             </p>
           </div>
 
@@ -349,8 +351,10 @@ export function App() {
               border: '1px solid rgba(255, 255, 255, 0.1)',
               backdropFilter: 'blur(8px)'
             }}>
-              <span style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Current Movie</span>
-              <span style={{ fontSize: '15px', fontWeight: '800', color: '#38bdf8' }}>{ticketData.movieName || '418'}</span>
+              <span style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Ticket Status</span>
+              <span style={{ fontSize: '15px', fontWeight: '800', color: ticketData.movieName ? '#38bdf8' : '#94a3b8' }}>
+                {ticketData.movieName || 'Enter Details'}
+              </span>
             </div>
           </div>
         </div>
@@ -432,7 +436,7 @@ export function App() {
               </span>
             </div>
             <span style={{ fontSize: '12px', color: '#64748b' }}>
-              Auto updates live
+              Updates instantly
             </span>
           </div>
 
